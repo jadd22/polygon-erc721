@@ -79,4 +79,20 @@ interface IERC721 is IERC165 {
     /// @return Returns the bool status if operator is allowed or not
 
     function isApprovedForAll(address _owner, address _operator) external view returns (bool);
+
+    // ==============================
+    //        IERC721Metadata
+    // ==============================
+
+    /**
+     * @dev Returns the token collection name.
+     */
+    function name() external view returns (string memory);
+
+    /**
+     * @dev Returns the token collection symbol.
+     */
+    function symbol() external view returns (string memory);
+
+
 }

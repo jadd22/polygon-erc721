@@ -82,7 +82,7 @@ describe("ERC721 Gas Optimized Contract", function () {
   describe("Mint NFT - ERC721", async () => {
     it("Should mint and assign ownership to owner", async () => {
       let quantity = 10;
-      let txHash = await myNFT.DefaultMint(owner.address, quantity);
+      let txHash = await myNFT.defaultMint(owner.address, quantity);
       let txReponse = await txHash.wait();
       console.log("Tx Hash");
       console.log(txReponse.gasUsed.toString());
@@ -95,7 +95,7 @@ describe("ERC721 Gas Optimized Contract", function () {
   describe("Mint NFT - ERC721 Gas Op", async () => {
     it("Should mint and assign ownership to owner", async () => {
       let quantity = 10;
-      let txHash = await myNFT.MintBulk(owner.address, quantity);
+      let txHash = await myNFT.mintBulk(owner.address, quantity);
       let txReponse = await txHash.wait();
       console.log("Tx Hash");
       console.log(txReponse.gasUsed.toString());

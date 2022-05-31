@@ -83,21 +83,20 @@ contract ERC721Permit is ERC721, ERC712, IERC721Permit {
         (address signer, ) = ECDSA.tryRecover(hash, signature);
         require(signer != address(0),"ZERO Address");
 
-        // address ownerOfToken = super.ownerOf(tokenId);
-        // require(
-        //     isValidEOASignature ||
-        //         _isValidContractERC1271Signature(
-        //            ownerOfToken,
-        //             hash,
-        //             signature
-        //         ) ||
-        //         _isValidContractERC1271Signature(
-        //             super.getApproved(tokenId),
-        //             hash,
-        //             signature
-        //         ),
-        //     "ERC721Permit: invalid signature"
-        // );
+        address ownerOfToken = super.ownerOf(tokenId);
+        require(
+                _isValidContractERC1271Signature(
+                   ownerOfToken,
+                    hash,
+                    signature
+                ) ||
+                _isValidContractERC1271Signature(
+                    super.getApproved(tokenId),
+                    hash,
+                    signature
+                ),
+            "ERC721Permit: invalid signature"
+        );
 
         _approve(spender, tokenId);
     }
@@ -106,7 +105,7 @@ contract ERC721Permit is ERC721, ERC712, IERC721Permit {
         address signer,
         bytes32 hash,
         bytes memory signature
-    ) private view returns (bool) {
+    ) internal view returns (bool) {
         (bool success, bytes memory result) = signer.staticcall(
             abi.encodeWithSelector(
                 IERC1271.isValidSignature.selector,

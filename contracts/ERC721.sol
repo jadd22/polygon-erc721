@@ -15,7 +15,7 @@ contract ERC721 is IERC721, ERC165 {
 
     string private _tokenSymbol;
 
-    // Revert Constant Declaration with Codes, with this code we can show meaningful 
+    // Revert Constant Declaration with Codes, with this code we can show meaningful
     // message for UX.
     string internal constant ZERO_ADDRESS = "003001";
     string internal constant NOT_VALID_NFT = "003002";
@@ -46,13 +46,11 @@ contract ERC721 is IERC721, ERC165 {
 
     mapping(address => mapping(address => bool)) internal approvedOperators;
 
-
     /// @dev Contains array of all the tokenIds generated.
     uint256[] internal totalTokenMinted;
 
-
     /// @dev Returns total number of tokens minted
-    function totakTokenSupply() external view returns(uint256) {
+    function tokenTokenSupply() external view returns (uint256) {
         uint256 totalSupply = totalTokenMinted.length;
         return totalSupply;
     }
@@ -85,14 +83,31 @@ contract ERC721 is IERC721, ERC165 {
         return owner;
     }
 
-    
-    function name() public view returns (string memory tokenName) {
+    /**
+     * @dev See {IERC721Metadata-name}.
+     */
+
+    function name() external view override returns (string memory tokenName) {
         return _tokenName;
     }
 
-    function symbol() public view returns (string memory tokenSymbol) {
+    /**
+     * @dev See {IERC721Metadata-name}.
+     */
+    function symbol()
+        external
+        view
+        override
+        returns (string memory tokenSymbol)
+    {
         return _tokenSymbol;
     }
+
+    /// @notice Owner And Receiver address should be non zero during token transfer
+    /// @dev This hook is called before any token transfer event
+    /// @param _from owner address
+    /// @param _to receiver address
+    /// @param _tokenId token id which is being transferred 
 
     function _beforeTokenTransferHook(
         address _from,
@@ -100,12 +115,20 @@ contract ERC721 is IERC721, ERC165 {
         uint256 _tokenId
     ) internal virtual {}
 
+
+    /// @notice Owner And Receiver address should be non zero during token transfer
+    /// @dev This hook is called after any token transfer event
+    /// @param _from owner address
+    /// @param _to receiver address
+    /// @param _tokenId token id which is being transferred 
     function _afterTokenTransferHook(
         address _from,
         address _to,
         uint256 _tokenId
     ) internal virtual {}
 
+
+    /// @dev Checks whether is owned by non zero address
     function _tokenOwnerExists(uint256 tokenId)
         internal
         view
@@ -121,15 +144,14 @@ contract ERC721 is IERC721, ERC165 {
         delete approvedTokenOwner[_tokenId];
     }
 
-    function isTokenExists(uint256 _tokenId) internal view returns (bool) {
-        return tokenIdOwner[_tokenId] != address(0);
-    }
+    /// @notice Revert if _to is zero address
+    /// @dev Mints new token, Token Id ownership will be changed from zero address to non zero address
+    /// @param _to new token owner  address
+    /// @param _tokenId token id which is minted
+
+
     function MintTokens(address _to, uint256 _tokenId) external {
         _mint(_to, _tokenId);
-        
-    }
-    function totalTokenSupply() external view returns(uint256) {
-        return totalTokenMinted.length;
     }
 
     /**
@@ -139,18 +161,27 @@ contract ERC721 is IERC721, ERC165 {
      *
      * - `tokenId` must exist.
      */
+
+
+    /// @dev Returns whether `_spender` is allowed to manage `_tokenId`.
+    /// @param _spender spender account address
+    /// @param _tokenId token id 
+
     function _isApprovedOrOwner(address _spender, uint256 _tokenId)
         internal
         view
         virtual
         returns (bool)
     {
-        require(isTokenExists(_tokenId), NOT_VALID_NFT);
+        require(_tokenOwnerExists(_tokenId), NOT_VALID_NFT);
         address owner = this.ownerOf(_tokenId);
         return (_spender == owner ||
             this.isApprovedForAll(owner, _spender) ||
             this.getApproved(_tokenId) == _spender);
     }
+
+
+    /// @dev Clears all the approvals for tokenId
 
     function _clearApproval(uint256 _tokenId) private {
         delete approvedTokenOwner[_tokenId];
@@ -186,14 +217,16 @@ contract ERC721 is IERC721, ERC165 {
         }
     }
 
-    function safeMint(address to, uint256 tokenId) external virtual {
-        _safeMint(to, tokenId, "");
+
+
+    /// @dev Safely Mints new Token Id
+    /// @param _to address for which token is minted
+    /// @param _tokenId token id is which minted for address
+
+    function safeMint(address _to, uint256 _tokenId) external virtual {
+        _safeMint(_to, _tokenId, "");
     }
 
-    /**
-     * @dev Same as {xref-ERC721-_safeMint-address-uint256-}[`_safeMint`], with an additional `data` parameter which is
-     * forwarded in {IERC721Receiver-onERC721Received} to contract recipients.
-     */
     function _safeMint(
         address to,
         uint256 tokenId,
@@ -231,10 +264,17 @@ contract ERC721 is IERC721, ERC165 {
 
         _afterTokenTransferHook(address(0), _to, _tokenId);
     }
-
+    
+    /// @dev Safely Mints new Token Id
+    /// @param _to address for which token is minted
+    /// @param _tokenId token id is which minted for address
     function Mint(address _to, uint256 _tokenId) external {
         _mint(_to, _tokenId);
     }
+
+
+    /// @dev Clears all the approval for token and change owner ship zero address
+    /// @param _tokenId token id which is to be burned
 
     function _burn(uint256 _tokenId) internal virtual {
         address tokenOwner = tokenIdOwner[_tokenId];
@@ -243,6 +283,11 @@ contract ERC721 is IERC721, ERC165 {
         emit Transfer(tokenOwner, address(0), _tokenId);
     }
 
+    /// @notice Avoid using this function directly, Please use SafeTransfer.
+    /// @dev Transfer token ownership from `_from` to `_to` address
+    /// @param _from address for which token is minted
+    /// @param _to address for which token is minted
+    /// @param _tokenId token id is which minted for address
     function _safeTransfer(
         address _from,
         address _to,
@@ -256,11 +301,20 @@ contract ERC721 is IERC721, ERC165 {
         );
     }
 
+    /// @notice Avoid using this function directly, Please use approve.
+    /// @dev Transfer ownership to _approvedTo
+    /// @param _approvedTo new token Id owner's address
+    /// @param _tokenId token Id who's ownership is transferred
     function _approve(address _approvedTo, uint256 _tokenId) internal virtual {
         approvedTokenOwner[_tokenId] = _approvedTo;
         emit Approval(this.ownerOf(_tokenId), _approvedTo, _tokenId);
     }
 
+    /// @notice Avoid using this function directly, Please use transferFrom.
+    /// @dev Transfer ownership from `_from` to `_to`
+    /// @param _from spender address
+    /// @param _to receiver address
+    /// @param _tokenId unique id of token
     function _transfer(
         address _from,
         address _to,
@@ -283,6 +337,9 @@ contract ERC721 is IERC721, ERC165 {
         _afterTokenTransferHook(_from, _to, _tokenId);
     }
 
+    /// @dev Transfer ownership to _approved
+    /// @param _operator new token Id owner's address
+    /// @param _approved approval status   
     function _setApprovalForAll(
         address _owner,
         address _operator,
@@ -294,6 +351,7 @@ contract ERC721 is IERC721, ERC165 {
         emit ApprovalForAll(_owner, _operator, _approved);
     }
 
+    ///@dev See {IERC721-safeTransferFrom}.
     function safeTransferFrom(
         address _from,
         address _to,
@@ -303,6 +361,7 @@ contract ERC721 is IERC721, ERC165 {
         _safeTransfer(_from, _to, _tokenId, _data);
     }
 
+    ///@dev See {IERC721-safeTransferFrom}.
     function safeTransferFrom(
         address _from,
         address _to,
@@ -311,6 +370,7 @@ contract ERC721 is IERC721, ERC165 {
         _safeTransfer(_from, _to, _tokenId, "");
     }
 
+    ///@dev See {IERC721-transferFrom}.
     function transferFrom(
         address _from,
         address _to,
@@ -321,13 +381,16 @@ contract ERC721 is IERC721, ERC165 {
         require(_to != tokenOwnerAddress, ZERO_ADDRESS);
         _transfer(_from, _to, _tokenId);
     }
-
+    
+    ///@dev See {IERC721-approve}.
+    
     function approve(address _to, uint256 _tokenId) external override {
         address tokenOwnerAddress = this.ownerOf(_tokenId);
         require(_to != tokenOwnerAddress, IS_OWNER);
         _approve(_to, _tokenId);
     }
 
+    ///@dev See {IERC721-setApprovalForAll}.
     function setApprovalForAll(address _operator, bool _approved)
         external
         override
@@ -336,6 +399,7 @@ contract ERC721 is IERC721, ERC165 {
         emit ApprovalForAll(msg.sender, _operator, _approved);
     }
 
+    ///@dev See {IERC721-getApproved}.
     function getApproved(uint256 _tokenId)
         external
         view
@@ -346,6 +410,7 @@ contract ERC721 is IERC721, ERC165 {
         return approvedTokenOwner[_tokenId];
     }
 
+    ///@dev See {IERC721-isApprovedForAll}.
     function isApprovedForAll(address _owner, address _operator)
         external
         view

@@ -135,17 +135,9 @@ contract ERC721GasOp is ERC721 {
         }
     }
 
-    /**
-     * @dev Mints `quantity` tokens and transfers them to `to`.
-     *
-     * Requirements:
-     *
-     * - `to` cannot be the zero address.
-     * - `quantity` must be greater than 0.
-     *
-     * Emits a {Transfer} event.
-     */
-    function MintBulk(address _to, uint256 _quantity) external {
+    ///@dev Mints `quantity` tokens and transfers them to `to`.
+
+    function mintBulk(address _to, uint256 _quantity) external {
         require(_to != address(0), "ERC721: mint to the zero address");
         require(_quantity != 0, "ERC721: 0 quantity mint");
         uint256 startTokenId = _currentIndex;
@@ -169,18 +161,11 @@ contract ERC721GasOp is ERC721 {
         }
     }
 
-    function DefaultMint(address _to, uint256 _quantity) external {
-        
-        // uint256 endTokenId = startTokenId + _quantity;
-        // while(startTokenId <= endTokenId) {
-        //     ERC721._mint(_to,startTokenId);
-        //     totalTokenMinted.push(startTokenId);
-        //     startTokenId += 1
-        // }
-        //require(quantity <= maxBatchSize, "cannot mint more than maxBatchSize");
+    ///@dev Mints `quantity` tokens and transfers them to `to`. Using standart ERC721 SafeMint
+    function defaultMint(address _to, uint256 _quantity) external {
         for (uint256 i = 0; i < _quantity; i++) {
             uint256  startTokenId = totalTokenMinted.length;
-            _safeMint(_to, startTokenId,"");
+            super._mint(_to, startTokenId);
         }
 
     }
