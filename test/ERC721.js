@@ -62,6 +62,7 @@ describe("ERC721 Gas Optimized Contract", function () {
   let addr1;
   let addr2;
   let addrs;
+  let gasCostStandard;
 
   beforeEach(async () => {
     const tokenName = "My NFT";
@@ -84,10 +85,10 @@ describe("ERC721 Gas Optimized Contract", function () {
       let quantity = 10;
       let txHash = await myNFT.defaultMint(owner.address, quantity);
       let txReponse = await txHash.wait();
-      console.log("Tx Hash");
+      console.log("Transaction gas cost for standard ERC721");
       console.log(txReponse.gasUsed.toString());
       let ownerAddress = await myNFT.ownerOf(5);
-
+      console.log("=====================");
       expect(ownerAddress).to.equals(owner.address.toString());
     });
   });
@@ -97,9 +98,9 @@ describe("ERC721 Gas Optimized Contract", function () {
       let quantity = 10;
       let txHash = await myNFT.mintBulk(owner.address, quantity);
       let txReponse = await txHash.wait();
-      console.log("Tx Hash");
+      console.log("Transaction gas cost for standard ERC721 based on ERC721A");
       console.log(txReponse.gasUsed.toString());
-      console.log(owner.address);
+      console.log("=====================");
       let mintedQuantity = await myNFT.balanceOf(owner.address);
 
       expect(mintedQuantity).to.equals(quantity);

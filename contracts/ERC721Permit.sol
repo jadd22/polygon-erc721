@@ -20,7 +20,9 @@ contract ERC721Permit is ERC721, ERC712, IERC721Permit {
             "Permit(address _approver,uint256 _tokenId,uint256 _nonce,uint256 _expireTime)"
         );
 
-    constructor(string memory name, string memory symbol) ERC721(name, symbol) ERC712(name, "1")
+    constructor(string memory name, string memory symbol)
+        ERC721(name, symbol)
+        ERC712(name, "1")
     {
         this;
     }
@@ -81,15 +83,11 @@ contract ERC721Permit is ERC721, ERC712, IERC721Permit {
         bytes32 hash = _hashTypedDataV4(structHash);
 
         (address signer, ) = ECDSA.tryRecover(hash, signature);
-        require(signer != address(0),"ZERO Address");
+        require(signer != address(0), "ZERO Address");
 
         address ownerOfToken = super.ownerOf(tokenId);
         require(
-                _isValidContractERC1271Signature(
-                   ownerOfToken,
-                    hash,
-                    signature
-                ) ||
+            _isValidContractERC1271Signature(ownerOfToken, hash, signature) ||
                 _isValidContractERC1271Signature(
                     super.getApproved(tokenId),
                     hash,

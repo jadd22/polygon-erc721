@@ -73,7 +73,7 @@ contract ERC721 is IERC721, ERC165 {
     /// @param _tokenId token id for which ownership needs to be checked
 
     function ownerOf(uint256 _tokenId)
-        external
+        public
         view
         override
         returns (address)
@@ -401,7 +401,7 @@ contract ERC721 is IERC721, ERC165 {
 
     ///@dev See {IERC721-getApproved}.
     function getApproved(uint256 _tokenId)
-        external
+        public
         view
         override
         returns (address approvedAddress)
