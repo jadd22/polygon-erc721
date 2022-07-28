@@ -3,7 +3,7 @@
 
 This project demostrate vanilla ERC721 based on eip-721.
 
-The project comes includes vanilla ERC721 Smart Contract alongwith, other eip based contract as mentioned below 
+The project includes vanilla ERC721 Smart Contract alongwith, other eip based contract as mentioned below 
 1. eip-165 (For validating interfaces) 
 2. eip-712 (Standard for message signing) 
 3. eip-721 (Standard for Non Fungible Token)
